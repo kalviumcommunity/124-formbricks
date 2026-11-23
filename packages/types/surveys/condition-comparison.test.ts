@@ -49,6 +49,19 @@ describe("compareConditionValues", () => {
     expect(compareConditionValues("doesNotEndWith", "hello", "lo")).toBe(false);
   });
 
+  test("text operators return false (or true for negated) when left value is undefined or null", () => {
+    expect(compareConditionValues("contains", undefined, "def")).toBe(false);
+    expect(compareConditionValues("contains", null, "null")).toBe(false);
+    expect(compareConditionValues("startsWith", undefined, "und")).toBe(false);
+    expect(compareConditionValues("startsWith", null, "nu")).toBe(false);
+    expect(compareConditionValues("endsWith", undefined, "ined")).toBe(false);
+    expect(compareConditionValues("endsWith", null, "ll")).toBe(false);
+    expect(compareConditionValues("doesNotContain", undefined, "def")).toBe(true);
+    expect(compareConditionValues("doesNotContain", null, "null")).toBe(true);
+    expect(compareConditionValues("doesNotStartWith", undefined, "und")).toBe(true);
+    expect(compareConditionValues("doesNotEndWith", undefined, "ined")).toBe(true);
+  });
+
   test("list operators need lists on both sides", () => {
     expect(compareConditionValues("includesOneOf", ["a", "b"], ["b", "c"])).toBe(true);
     expect(compareConditionValues("includesAllOf", ["a", "b"], ["a", "c"])).toBe(false);

@@ -130,6 +130,36 @@ const isSubmittedValue = (leftValue: unknown, context: TConditionComparisonConte
   return typeof leftValue === "number";
 };
 
+type TTextOperator =
+  | "contains"
+  | "doesNotContain"
+  | "startsWith"
+  | "doesNotStartWith"
+  | "endsWith"
+  | "doesNotEndWith";
+
+const compareText = (operator: TTextOperator, leftValue: unknown, rightValue: unknown): boolean => {
+  if (leftValue === undefined || leftValue === null) {
+    return operator === "doesNotContain" || operator === "doesNotStartWith" || operator === "doesNotEndWith";
+  }
+  const left = typeof leftValue === "string" || typeof leftValue === "number" ? String(leftValue) : "";
+  const right = typeof rightValue === "string" || typeof rightValue === "number" ? String(rightValue) : "";
+  switch (operator) {
+    case "contains":
+      return left.includes(right);
+    case "doesNotContain":
+      return !left.includes(right);
+    case "startsWith":
+      return left.startsWith(right);
+    case "doesNotStartWith":
+      return !left.startsWith(right);
+    case "endsWith":
+      return left.endsWith(right);
+    case "doesNotEndWith":
+      return !left.endsWith(right);
+  }
+};
+
 const compare = (
   operator: TSurveyLogicConditionsOperator,
   leftValue: unknown,
@@ -142,17 +172,12 @@ const compare = (
     case "doesNotEqual":
       return compareDoesNotEqual(leftValue, rightValue, context);
     case "contains":
-      return String(leftValue).includes(String(rightValue));
     case "doesNotContain":
-      return !String(leftValue).includes(String(rightValue));
     case "startsWith":
-      return String(leftValue).startsWith(String(rightValue));
     case "doesNotStartWith":
-      return !String(leftValue).startsWith(String(rightValue));
     case "endsWith":
-      return String(leftValue).endsWith(String(rightValue));
     case "doesNotEndWith":
-      return !String(leftValue).endsWith(String(rightValue));
+      return compareText(operator, leftValue, rightValue);
     case "isSubmitted":
       return isSubmittedValue(leftValue, context);
     case "isSkipped":
